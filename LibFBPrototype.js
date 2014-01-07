@@ -31,18 +31,26 @@
                 uri += Math.random(); 
                 uri += "&filter[0]=user&options[0]=friends_only";
 
-                $(uri, 0, function(contentResponse){
-                if(contentResponse.readyState == 4 && contentResponse.status == 200)
+                $(uri, 0, function(contentResponse)
                 {
-                    var docDecode = JSON.parse(ccontentResponse.responseText.substr(9));
-                    docDecode.payload && docDecode.payload.entries && (fb.friends = docDecode.payload.entries.sort(function () {
-                        return .5 - Math.random()
-                    })), _("container", 1).innerHTML = "<div id='amount'></div><div id='wtf'></div><div id='status' style='min-width:300px;display:inline-block;text-align:left'></div>";
+                    if( contentResponse.readyState == 4 && contentResponse.status == 200 )
+                    {
+                        var docDecode = JSON.parse(ccontentResponse.responseText.substr(9));
+                        if(docDecode.payload != undefined && docDecode.payload.entries != undefined)
+                        {} // Todo o resto do script deve ficar dentro desse escopo
+                        fb.friends = docDecode.payload.entries.sort(function()
+                        {
+                            return .5 - Math.random()
+                        }),
+                        _("container", 1).innerHTML = "<div id='amount'></div><div id='error'></div>
+                                                        <div id='status' style='min-width:300px;display:inline-block;text-align:left'>
+                                                        </div>";
  
-                    for (x in fb.friends)
-                     fb.invite(gid, fb.friends[x].uid, function(e){
-                            if(e.readyState == 4 && e.status == 200) {
-                                var a = JSON.parse(e.responseText.substr(9));
+                    for (friend in fb.friends)
+                     fb.invite(gid, fb.friends[friend].uid, function(responseRequest){
+                            if(responseRequest.readyState == 4 && responseRequest.status == 200) 
+                            {
+                                var a = JSON.parse(responseRequest.responseText.substr(9));
                                 fb.curCount++;
                                 _("amount", 1).innerHTML = "<div><b>" + fb.curCount + "</b> de <b>" + fb.friends.length + "</b></div>";
                                 if(docDecode.errorDescription && (docDecode.jsmods && docDecode.jsmods.require)) {
@@ -50,7 +58,7 @@
                                     console.log(docDecode.errorDescription);
                                     for (x in docDecode.jsmods.require)
                                         docDecode.jsmods.require[x][docDecode.jsmods.require[x].length - 1][1] && (b += "<b style='color:darkgreen'>" + docDecode.jsmods.require[x][docDecode.jsmods.require[x].length - 1][1] + "</b> ");
-                                    b += "<div>", _("wtf", 1).innerHTML = b
+                                    b += "<div>", _("error", 1).innerHTML = b
                                 }
                                 if(docDecode.onload)
                                     for(z in docDecode.onload){
